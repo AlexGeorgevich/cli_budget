@@ -1,7 +1,8 @@
 ### Imports:
 import assets
 
-### Parameters:
+
+### Variables:
 accounts = {}
 expenseLog = ""
 
