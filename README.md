@@ -21,5 +21,4 @@
  - To be included.
 
 ----
-<img src="python-powered-w-200x80.png" alt="drawing" width="80"/>
-<img src="withnano.png" alt="drawing" width="60"/>
+<img src="Python Powered 200x80.png" alt="drawing" width="80"/>
