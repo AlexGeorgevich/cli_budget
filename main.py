@@ -1,10 +1,11 @@
 ### Imports:
 import assets
-
+import json
 
 ### Variables:
-accounts = {}
-expenseLog = ""
+# Loading local JSON file "userAccounts.json" containing user data or an empty JSON object.
+with open("userAccounts.json", "r") as readDataFile:
+	accounts = json.load(readDataFile)
 
 ### Functions:
 # Account managment functions:
@@ -141,3 +142,7 @@ while run:
   	# Handle unknown inputs.
 	else:
 		print("Unknown command, try again or type 'help' to see avaliable commands.")
+
+# Saving user data to local JSON file "userAccounts.json" for future usage.
+with open("userAccounts.json", "w") as writeDataFile:
+	json.dump(accounts, writeDataFile)
