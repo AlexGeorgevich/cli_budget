@@ -1,11 +1,12 @@
 ### Imports:
-import assets
-import json
+import assets, json, os
 
-### Variables:
-# Loading local JSON file "userAccounts.json" containing user data or an empty JSON object.
-with open("userAccounts.json", "r") as readDataFile:
-	accounts = json.load(readDataFile)
+# Loading local JSON file "userAccounts.json" containing user data (or empty JSON object for first time users).
+with open("userAccounts.json", "r") as readAccounts:
+	accounts = json.load(readAccounts)
+# Loading local JSON file "userRecords.json" containing user data (or empty JSON object for first time users).
+with open("userRecords.json", "r") as readRecords:
+	records = json.load(readRecords)
 
 ### Functions:
 # Account managment functions:
@@ -14,7 +15,7 @@ def seeBudget():
 	print("Your budget:")
 	for account in accounts.items():
 		sum += account[1]
-		print(f"    {account[0]}, {account[1]}")
+		print(f"    ({account[0]}) {account[1]}")
 	print("    ==================")
 	print(f"    Balance sum: {sum}\n")
 
@@ -26,31 +27,46 @@ def rmAccount(accName):
 	accounts.pop(accName)
 
 # Log functions:
-def logExpense(accName, expenseValue):
-	accounts[accName] -= expenseValue
+def seeLog():
+	print("Your records:")
+	for record in records:
+		print(f"    ({record[0]}) {record[1]}{record[2]} | {record[3]}")
+	print("    ==================")
 
-def logIncome(accName, incomeValue):
+def logExpense(accName, expenseValue, expenseMessage):
+	accounts[accName] -= expenseValue
+	records.append([accName, "-", int(expenseValue), expenseMessage])
+
+def logIncome(accName, incomeValue, incomeMessage):
 	accounts[accName] += incomeValue
+	records.append([accName, "+", int(incomeValue), incomeMessage])
 
 def logTransfer(accToSend, accToGet, transferValue):
 	accounts[accToSend] -= transferValue
 	accounts[accToGet] += transferValue
+	records.append([accToSend, int(transferValue), " >>> " + accToGet, "Transfer"])
+
+def clear():
+	os.system('clear')
 
 ### Intro, Main loop and Commands:
+clear()
 assets.logo()
-print("Welcome to CLI Budget : Simple Command Line Interface Budget app.\nIf you are unfamiliar with commands in CLI Budget, type 'help'.\nYou can quit the program by typing 'exit'.")
+print("Welcome to CLI Budget: Simple Command Line Interface Budget app.\nIf you are unfamiliar with commands in CLI Budget, type 'help'.\nYou can quit the program by typing 'exit'.")
 
 run = True
 while run:
-
+	
 	mainCommand = input("Enter command: ").lower()
+	clear()
+	assets.logo()
 
 	# Help.
 	if mainCommand == "help":
 		assets.help()
 
 	# See budget.
-	elif mainCommand == "budget":
+	elif mainCommand == "ls acc":
 		if accounts == {}:
 			print("You don't have any registered accounts. Try adding one with the 'add acc' command.")
 		else:
@@ -91,6 +107,13 @@ while run:
 			else:
 				rmAccount(accName)
 
+	# See records log.
+	elif mainCommand.lower() == "log":
+		if records == []:
+			print("You don't have any fund records logged.")
+		else:
+			seeLog()
+
 	# Log expense.
 	elif mainCommand == "-$":
 		if accounts == {}:
@@ -102,7 +125,8 @@ while run:
 				continue
 			else:
 				expenseValue = int(input("EXPENSE amount: "))
-				logExpense(accName, expenseValue)
+				expenseMessage = input("Log EXPENSE message [press 'Enter' to skip]: ")
+				logExpense(accName, expenseValue, expenseMessage)
 
 	# Log income.
 	elif mainCommand == "+$":
@@ -115,7 +139,8 @@ while run:
 				continue
 			else:
 				incomeValue = int(input("INCOME amount: "))
-				logIncome(accName, incomeValue)
+				incomeMessage = input("Log INCOME message [press 'Enter' to skip]: ")
+				logIncome(accName, incomeValue, incomeMessage)
 
 	# Log transfer.
 	elif mainCommand == "mv $":
@@ -144,5 +169,8 @@ while run:
 		print("Unknown command, try again or type 'help' to see avaliable commands.")
 
 # Saving user data to local JSON file "userAccounts.json" for future usage.
-with open("userAccounts.json", "w") as writeDataFile:
-	json.dump(accounts, writeDataFile)
+with open("userAccounts.json", "w") as writeAccounts:
+	json.dump(accounts, writeAccounts)
+# Saving user data to local JSON file "userRecords.json" for future usage.
+with open("userRecords.json", "w") as writeRecords:
+	json.dump(records, writeRecords)
